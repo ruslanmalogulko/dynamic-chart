@@ -3,6 +3,7 @@ import {LineChart, XAxis, YAxis, CartesianGrid, Line} from 'recharts';
 
 const INITIAL_ITEMS_NUMBER = 10;
 const getDataLink = items => `https://qrng.anu.edu.au/API/jsonI.php?length=${items}&type=uint8`;
+let counter = INITIAL_ITEMS_NUMBER;
 
 function normalizeChartData(dataArray) {
     const dataBoilerplate =  new Array(dataArray[0].data.length).fill({}).map((item, idx) => ({ name: `item-${idx}` }));
@@ -42,8 +43,10 @@ function DynamicCharts({ checkboxState }) {
     }, []);
 
     useEffect( () => {
-        let counter = INITIAL_ITEMS_NUMBER;
         const interval = setInterval(async () => {
+            if (!keysToFetch.length) {
+                return;
+            }
             counter += 1;
 
             const data = await Promise.all(keysToFetch.map(label => fetchData(1, label)));
