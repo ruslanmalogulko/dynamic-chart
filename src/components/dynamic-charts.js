@@ -34,27 +34,24 @@ function DynamicCharts({ checkboxState }) {
     const [itemToAdd, setItemToAdd] = useState();
     const keysToFetch = Object.keys(checkboxState).filter(item => checkboxState[item]);
 
-    useEffect(async function() {
-        Promise.all(keysToFetch.map(label => fetchData(INITIAL_ITEMS_NUMBER, label)))
-            .then((data) => {
-                setNormalizedData(normalizeChartData(data));
-            });
+    useEffect(  () => {
+        (async function fetchAll() {
+            const data = await Promise.all(keysToFetch.map(label => fetchData(INITIAL_ITEMS_NUMBER, label)));
+            return setNormalizedData(normalizeChartData(data));
+        })();
     }, []);
 
-    useEffect(() => {
+    useEffect( () => {
         let counter = INITIAL_ITEMS_NUMBER;
-        const interval = setInterval(() => {
+        const interval = setInterval(async () => {
             counter += 1;
 
-            console.log(keysToFetch);
-            Promise.all(keysToFetch.map(label => fetchData(1, label)))
-                .then((data) => {
-                    const itemToAdd = data.reduce((acc, dataItem) => {
-                        acc[dataItem.label] = dataItem.data[0];
-                        return acc;
-                    }, {name: `item-${counter}`});
-                    setItemToAdd(itemToAdd);
-                });
+            const data = await Promise.all(keysToFetch.map(label => fetchData(1, label)));
+            const itemToAdd = data.reduce((acc, dataItem) => {
+                acc[dataItem.label] = dataItem.data[0];
+                return acc;
+            }, {name: `item-${counter}`});
+            setItemToAdd(itemToAdd);
         }, 1000);
         return () => clearInterval(interval);
     }, [checkboxState]);
