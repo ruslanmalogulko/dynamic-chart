@@ -20,7 +20,7 @@ function App() {
             <h2>
                 Dynamic Charts
             </h2>
-            <DynamicCharts/>
+            <DynamicCharts checkboxState={checkboxState}/>
             <SelectControl checkboxState={checkboxState} onChange={onSelectChange} names={NAMES}/>
         </div>
     );
